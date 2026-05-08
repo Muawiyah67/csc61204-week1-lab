@@ -114,4 +114,76 @@ class PatientAdmissionTest {
             double temp, int age, int expectedScore) {
         assertEquals(expectedScore, admission.calculateRiskScore(temp, age));
     }
+    @Test
+    void isEligibleForPriorityCare_elderlyNoChronic_returnsTrue() {
+        assertTrue(admission.isEligibleForPriorityCare(70, false));
+    }
+
+    @Test
+    void isEligibleForPriorityCare_youngWithChronic_returnsTrue() {
+        assertTrue(admission.isEligibleForPriorityCare(30, true));
+    }
+
+    @Test
+    void isEligibleForPriorityCare_youngHealthy_returnsFalse() {
+        assertFalse(admission.isEligibleForPriorityCare(30, false));
+    }
+
+    @Test
+    void isEligibleForPriorityCare_elderlyWithChronic_returnsTrue() {
+        assertTrue(admission.isEligibleForPriorityCare(70, true));
+
+    }
+    // --- formatPatientReport tests (5 acceptance criteria + 3 edge cases) ---
+
+    @Test
+    void formatPatientReport_validInputs_returnsFormattedString() {
+        assertEquals("Patient: John Doe | Risk: 80 | Priority: URGENT",
+                admission.formatPatientReport("John Doe", 80, "URGENT"));
+    }
+
+    @Test
+    void formatPatientReport_nullName_returnsUnknown() {
+        assertEquals("Patient: UNKNOWN | Risk: 50 | Priority: MODERATE",
+                admission.formatPatientReport(null, 50, "MODERATE"));
+    }
+
+    @Test
+    void formatPatientReport_negativeScore_returnsZero() {
+        assertEquals("Patient: Jane | Risk: 0 | Priority: ROUTINE",
+                admission.formatPatientReport("Jane", -10, "ROUTINE"));
+    }
+
+    @Test
+    void formatPatientReport_nullPriority_returnsUnassigned() {
+        assertEquals("Patient: Bob | Risk: 30 | Priority: UNASSIGNED",
+                admission.formatPatientReport("Bob", 30, null));
+    }
+
+    @Test
+    void formatPatientReport_emptyPriority_returnsUnassigned() {
+        assertEquals("Patient: Alice | Risk: 30 | Priority: UNASSIGNED",
+                admission.formatPatientReport("Alice", 30, ""));
+    }
+
+// Edge cases
+
+    @Test
+    void formatPatientReport_whitespacePriority_returnsUnassigned() {
+        assertEquals("Patient: Tom | Risk: 40 | Priority: UNASSIGNED",
+                admission.formatPatientReport("Tom", 40, "   "));
+    }
+
+    @Test
+    void formatPatientReport_allNullInputs_returnsSafeDefaults() {
+        assertEquals("Patient: UNKNOWN | Risk: 0 | Priority: UNASSIGNED",
+                admission.formatPatientReport(null, -5, null));
+    }
+
+    @Test
+    void formatPatientReport_veryLongName_preservesName() {
+        String longName = "A".repeat(100);
+        assertEquals("Patient: " + longName + " | Risk: 10 | Priority: ROUTINE",
+                admission.formatPatientReport(longName, 10, "ROUTINE"));
+    }
 }

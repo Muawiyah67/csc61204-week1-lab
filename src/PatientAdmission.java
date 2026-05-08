@@ -37,4 +37,14 @@ public class PatientAdmission {
     public boolean isValidPatientName(String name) {
         return name != null && !name.trim().isEmpty() && name.length() <= 100;
     }
+    public boolean isEligibleForPriorityCare(int age, boolean hasChronicCondition) {
+        return age >= 65 || hasChronicCondition;
+    }
+    public String formatPatientReport (String name, int riskScore, String priority){
+        String safeName = (name != null) ? name : "UNKNOWN";
+        int safeScore = Math.max(0, riskScore);
+        String safePriority = (priority != null && !priority.trim().isEmpty())
+                ? priority : "UNASSIGNED";
+        return "Patient: " + safeName + " | Risk: " + safeScore + " | Priority: " + safePriority;
+    }
 }
